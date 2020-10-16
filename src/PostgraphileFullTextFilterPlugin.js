@@ -48,6 +48,8 @@ module.exports = function PostGraphileFulltextFilterPlugin(builder) {
       parseLiteral(lit) {
         if (Object.prototype.toString.call(lit) == "[object Object]" && lit.value !== undefined) {
           return lit.value
+        }
+        return lit
       },
     });
 
