@@ -46,7 +46,7 @@ module.exports = function PostGraphileFulltextFilterPlugin(builder) {
         return value;
       },
       parseLiteral(lit) {
-        return lit;
+        return lit.value;
       },
     });
 
