@@ -165,8 +165,9 @@ module.exports = function PostGraphileFulltextFilterPlugin(builder) {
               identifier,
               tsQueryString,
             ] = parentQueryBuilder.__fts_ranks[baseFieldName];
+            const finalQuery = tsQueryString.replace(/:\*/g, '');
             queryBuilder.select(
-              sql.fragment`ts_rank(${identifier}, to_tsquery('english', ${sql.value(tsQueryString)}))`,
+              sql.fragment`ts_rank_cd(${identifier}, to_tsquery('english', ${sql.value(finalQuery)}))`,
               alias,
             );
           },
@@ -273,7 +274,7 @@ module.exports = function PostGraphileFulltextFilterPlugin(builder) {
               tsQueryString,
             ] = queryBuilder.__fts_ranks[fieldName];
             const finalQuery = tsQueryString.replace(/:\*/g, '');
-            return sql.fragment`ts_rank_cd(${identifier}, to_tsquery(${sql.value(finalQuery)}))`;
+            return sql.fragment`ts_rank_cd(${identifier}, to_tsquery('english', ${sql.value(finalQuery)}))`;
           };
 
           memo[ascFieldName] = { // eslint-disable-line no-param-reassign
