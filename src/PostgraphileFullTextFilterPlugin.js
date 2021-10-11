@@ -1,6 +1,9 @@
 const tsquery = require('pg-tsquery');
 const { omit } = require('graphile-build-pg');
 
+
+const replaceRegex = new RegExp(':\\*', 'g');
+
 module.exports = function PostGraphileFulltextFilterPlugin(builder) {
   builder.hook('inflection', (inflection, build) => build.extend(inflection, {
     fullTextScalarTypeName() {
@@ -165,7 +168,7 @@ module.exports = function PostGraphileFulltextFilterPlugin(builder) {
               identifier,
               tsQueryString,
             ] = parentQueryBuilder.__fts_ranks[baseFieldName];
-            const finalQuery = tsQueryString.replace(/:\*/g, '');
+            const finalQuery = tsQueryString.replace(replaceRegex, '');
             queryBuilder.select(
               sql.fragment`ts_rank_cd(${identifier}, to_tsquery('english', ${sql.value(finalQuery)}))`,
               alias,
@@ -273,7 +276,7 @@ module.exports = function PostGraphileFulltextFilterPlugin(builder) {
               identifier,
               tsQueryString,
             ] = queryBuilder.__fts_ranks[fieldName];
-            const finalQuery = tsQueryString.replace(/:\*/g, '');
+            const finalQuery = tsQueryString.replace(replaceRegex, '');
             return sql.fragment`ts_rank_cd(${identifier}, to_tsquery('english', ${sql.value(finalQuery)}))`;
           };
 
