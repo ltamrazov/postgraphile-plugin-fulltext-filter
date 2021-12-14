@@ -1,6 +1,6 @@
 {
   "name": "postgraphile-plugin-fulltext-filter",
-  "version": "1.0.0-beta.8",
+  "version": "1.0.0-beta.9",
   "description": "Full text searching on tsvector fields for use with postgraphile-plugin-connection-filter",
   "main": "index.js",
   "repository": {
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "graphile-build-pg": "^4.2.0",
-    "pg-tsquery": "^6.4.2",
+    "pg-tsquery": "^8.3.0",
     "postgraphile-plugin-connection-filter": "^2.0.0"
   },
   "peerDependencies": {
