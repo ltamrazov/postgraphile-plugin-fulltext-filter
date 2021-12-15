@@ -1,6 +1,12 @@
-const tsquery = require('pg-tsquery');
+const TsQuery = require('pg-tsquery');
 const { omit } = require('graphile-build-pg');
 
+const parsingOpts = {
+  and: /^(?!\s*(?:[|,]|or))(?:[\s&+:|,!]|and)*/i,
+  negated: /[!]$/,
+  word: /^[\s*&+<:,|]*(?<negated>[\s!]*)[\s*&+<:,|]*(?:(?<quote>["'])(?<phrase>.*?)\k<quote>|(?<word>[^\s,|&+<>:*()[\]!]+))/,
+};
+const tsquery = TsQuery(parsingOpts);
 
 const replaceRegex = new RegExp(':\\*', 'g');
 
@@ -94,6 +100,7 @@ module.exports = function PostGraphileFulltextFilterPlugin(builder) {
         const tsQueryString = tsquery(input);
         queryBuilder.__fts_ranks = queryBuilder.__fts_ranks || {};
         queryBuilder.__fts_ranks[fieldName] = [identifier, tsQueryString];
+
         return sql.query`${identifier} @@ to_tsquery('english', ${sql.value(tsQueryString)})`;
       },
     );
@@ -169,6 +176,7 @@ module.exports = function PostGraphileFulltextFilterPlugin(builder) {
               tsQueryString,
             ] = parentQueryBuilder.__fts_ranks[baseFieldName];
             const finalQuery = tsQueryString.replace(replaceRegex, '');
+
             queryBuilder.select(
               sql.fragment`ts_rank_cd(${identifier}, to_tsquery('english', ${sql.value(finalQuery)}))`,
               alias,
@@ -277,6 +285,7 @@ module.exports = function PostGraphileFulltextFilterPlugin(builder) {
               tsQueryString,
             ] = queryBuilder.__fts_ranks[fieldName];
             const finalQuery = tsQueryString.replace(replaceRegex, '');
+
             return sql.fragment`ts_rank_cd(${identifier}, to_tsquery('english', ${sql.value(finalQuery)}))`;
           };
 
